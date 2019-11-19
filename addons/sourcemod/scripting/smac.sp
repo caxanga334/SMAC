@@ -23,6 +23,7 @@
 #include <sourcemod>
 #include <sdktools>
 #include <smac>
+#include <colors>
 
 /* Plugin Info */
 public Plugin myinfo =
@@ -397,7 +398,7 @@ public any Native_Ban(Handle plugin,int numParams)
 }
 
 // native SMAC_PrintAdminNotice(const String:format[], any:...);
-public any Native_PrintAdminNotice(Handle plugin,int numParams)
+public any Native_PrintAdminNotice(Handle plugin, int numParams)
 {
     char sBuffer[192];
 
@@ -417,7 +418,7 @@ public any Native_PrintAdminNotice(Handle plugin,int numParams)
         SetGlobalTransTarget(LANG_SERVER);
         FormatNativeString(0, 1, 2, sizeof(sBuffer), _, sBuffer);
         Format(sBuffer, sizeof(sBuffer), "%t%s", "SMAC_Tag", sBuffer);
-        //CRemoveTags(sBuffer, sizeof(sBuffer));
+        CRemoveTags(sBuffer, sizeof(sBuffer));
         SMAC_RelayToIRC(sBuffer);
     }
 }
