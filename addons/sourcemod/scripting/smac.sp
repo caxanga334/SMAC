@@ -23,7 +23,6 @@
 #include <sourcemod>
 #include <sdktools>
 #include <smac>
-#include <morecolors>
 
 /* Plugin Info */
 public Plugin myinfo =
@@ -199,7 +198,7 @@ public Action Timer_WelcomeMsg(Handle timer, any serial)
 
     if (IS_CLIENT(client) && IsClientInGame(client))
     {
-        CPrintToChat(client, "%t%t", "SMAC_Tag", "SMAC_WelcomeMsg");
+        PrintToChat(client, "%t%t", "SMAC_Tag", "SMAC_WelcomeMsg");
     }
 
     return Plugin_Stop;
@@ -408,7 +407,7 @@ public any Native_PrintAdminNotice(Handle plugin,int numParams)
         {
             SetGlobalTransTarget(i);
             FormatNativeString(0, 1, 2, sizeof(sBuffer), _, sBuffer);
-            CPrintToChat(i, "%t%s", "SMAC_Tag", sBuffer);
+            PrintToChat(i, "%t%s", "SMAC_Tag", sBuffer);
         }
     }
 
