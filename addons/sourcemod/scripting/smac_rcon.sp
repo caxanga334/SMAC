@@ -89,7 +89,8 @@ public void OnRconPassChanged(ConVar convar, char[] oldValue, char[] newValue)
     if (g_bRconLocked && !StrEqual(newValue, g_sRconRealPass))
     {
         SMAC_Log("Rcon password changed to \"%s\". Reverting back to original config value.", newValue);
-        SetConVarString(g_hCvarRconPass, g_sRconRealPass);
+        //SetConVarString(g_hCvarRconPass, g_sRconRealPass);
+        g_hCvarRconPass.SetString(g_sRconRealPass, false, false);
     }
 }
 

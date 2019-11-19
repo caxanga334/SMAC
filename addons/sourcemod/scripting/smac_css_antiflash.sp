@@ -71,7 +71,7 @@ public void OnClientDisconnect(int client)
 
 public Action Event_PlayerBlind(Event event, const char[] name, bool dontBroadcast)
 {
-    int client = GetClientOfUserId(GetEventInt(event, "userid"));
+    int client = GetClientOfUserId(event.getInt("userid"));
 
     if (IS_CLIENT(client) && !IsFakeClient(client))
     {

@@ -176,7 +176,7 @@ void AutoTrigger_Detected(int client,int method)
         {
             SMAC_PrintAdminNotice("%t", "SMAC_AutoTriggerDetected", client, sMethod);
 
-            if (GetConVarBool(g_hCvarBan))
+            if (g_hCvarBan.BoolValue)
             {
                 SMAC_LogAction(client, "was banned for using auto-trigger cheat: %s", sMethod);
                 SMAC_Ban(client, "AutoTrigger Detection: %s", sMethod);

@@ -90,9 +90,9 @@ public Action Event_SmokeDetonate(Event event, const char[] name, bool dontBroad
     Handle hPack;
     CreateDataTimer(SMOKE_DELAYTIME, Timer_SmokeDeployed, hPack, TIMER_FLAG_NO_MAPCHANGE);
     WritePackCell(hPack, g_iRoundCount);
-    WritePackFloat(hPack, GetEventFloat(event, "x"));
-    WritePackFloat(hPack, GetEventFloat(event, "y"));
-    WritePackFloat(hPack, GetEventFloat(event, "z"));
+    WritePackFloat(hPack, event.GetFloat("x"));
+    WritePackFloat(hPack, event.GetFloat("y"));
+    WritePackFloat(hPack, event.GetFloat("z"));
 
     CreateTimer(SMOKE_FADETIME, Timer_SmokeEnded, g_iRoundCount, TIMER_FLAG_NO_MAPCHANGE);
 }
