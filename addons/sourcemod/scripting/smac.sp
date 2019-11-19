@@ -417,7 +417,7 @@ public any Native_PrintAdminNotice(Handle plugin,int numParams)
         SetGlobalTransTarget(LANG_SERVER);
         FormatNativeString(0, 1, 2, sizeof(sBuffer), _, sBuffer);
         Format(sBuffer, sizeof(sBuffer), "%t%s", "SMAC_Tag", sBuffer);
-        CRemoveTags(sBuffer, sizeof(sBuffer));
+        //CRemoveTags(sBuffer, sizeof(sBuffer));
         SMAC_RelayToIRC(sBuffer);
     }
 }
