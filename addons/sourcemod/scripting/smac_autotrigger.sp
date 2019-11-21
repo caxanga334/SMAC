@@ -35,8 +35,8 @@ public Plugin myinfo =
 };
 
 /* Globals */
-#define TRIGGER_DETECTIONS  20		// Amount of detections needed to perform action.
-#define MIN_JUMP_TIME       0.500	// Minimum amount of air-time for a jump to count.
+#define TRIGGER_DETECTIONS  20      // Amount of detections needed to perform action.
+#define MIN_JUMP_TIME       0.500   // Minimum amount of air-time for a jump to count.
 
 // Detection methods.
 #define METHOD_BUNNYHOP     0

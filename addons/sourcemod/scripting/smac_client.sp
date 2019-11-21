@@ -310,7 +310,7 @@ public Action Timer_DecreaseCount(Handle timer)
 
         if (g_iAchievements[i])
         {
-        	g_iAchievements[i]--;
+            g_iAchievements[i]--;
         }
     }
 

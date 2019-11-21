@@ -35,9 +35,9 @@ public Plugin myinfo =
 };
 
 /* Globals */
-#define SMOKE_DELAYTIME	0.75	// Seconds until smoke is fully deployed
-#define SMOKE_FADETIME	15.0	// Seconds until a smoke begins to fade away
-#define SMOKE_RADIUS	2025	// (45^2) Radius to check for a player inside a smoke cloud
+#define SMOKE_DELAYTIME 0.75    // Seconds until smoke is fully deployed
+#define SMOKE_FADETIME  15.0    // Seconds until a smoke begins to fade away
+#define SMOKE_RADIUS    2025    // (45^2) Radius to check for a player inside a smoke cloud
 
 Handle g_hSmokeLoop = INVALID_HANDLE;
 Handle g_hSmokes = INVALID_HANDLE;
@@ -107,7 +107,7 @@ public Action Event_RoundStart(Event event, const char[] name, bool dontBroadcas
 public Action Timer_SmokeDeployed(Handle timer, Handle hPack)
 {
     ResetPack(hPack);
-	
+    
     /* Make sure the smoke still exists. */
     if (g_iRoundCount == ReadPackCell(hPack))
     {

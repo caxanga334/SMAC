@@ -35,9 +35,9 @@ public Plugin myinfo =
 };
 
 /* Globals */
-#define SPIN_DETECTIONS     15		// Seconds of non-stop spinning before spinhack is detected
-#define SPIN_ANGLE_CHANGE   1440.0	// Max angle deviation over one second before being flagged
-#define SPIN_SENSITIVITY    6		// Ignore players with a higher mouse sensitivity than this
+#define SPIN_DETECTIONS     15      // Seconds of non-stop spinning before spinhack is detected
+#define SPIN_ANGLE_CHANGE   1440.0  // Max angle deviation over one second before being flagged
+#define SPIN_SENSITIVITY    6       // Ignore players with a higher mouse sensitivity than this
 
 float g_fPrevAngle[MAXPLAYERS+1];
 float g_fAngleDiff[MAXPLAYERS+1];

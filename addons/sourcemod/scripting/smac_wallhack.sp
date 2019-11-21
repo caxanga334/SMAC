@@ -44,8 +44,8 @@ public Plugin myinfo =
 };
 
 /* Globals */
-//#define SND_UNKNOWN_CSGO_FLAG1	(1 << 10)
-//#define SND_UNKNOWN_CSGO_FLAG2	(1 << 11)
+//#define SND_UNKNOWN_CSGO_FLAG1    (1 << 10)
+//#define SND_UNKNOWN_CSGO_FLAG2    (1 << 11)
 
 GameType g_Game = Game_Unknown;
 
@@ -124,7 +124,7 @@ public void OnPluginStart()
     if ((hCvar = FindConVar("sv_client_max_interp_ratio")) != INVALID_HANDLE && IsConVarDefault(hCvar))
     {
         SetConVarInt(hCvar, 1);
-	}
+    }
     
     // Initialize.
     g_Game = SMAC_GetGameType();
@@ -1035,12 +1035,12 @@ bool IsRectangleVisible(const float start[3], const float end[3], const float mi
 /**
  * CS:S FarESP Blocking
  */
-#define CS_TEAM_NONE        0	/**< No team yet. */
-#define CS_TEAM_SPECTATOR   1	/**< Spectators. */
-#define CS_TEAM_T           2	/**< Terrorists. */
-#define CS_TEAM_CT          3	/**< Counter-Terrorists. */
+#define CS_TEAM_NONE        0   /**< No team yet. */
+#define CS_TEAM_SPECTATOR   1   /**< Spectators. */
+#define CS_TEAM_T           2   /**< Terrorists. */
+#define CS_TEAM_CT          3   /**< Counter-Terrorists. */
 
-#define MAX_RADAR_CLIENTS   36	// Max amount of client data we can include in one message.
+#define MAX_RADAR_CLIENTS   36  // Max amount of client data we can include in one message.
 
 UserMsg g_msgUpdateRadar = INVALID_MESSAGE_ID;
 bool g_bPlayerSpotted[MAXPLAYERS+1];
