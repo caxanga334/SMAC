@@ -21,8 +21,8 @@
 
 /* SM Includes */
 #include <sourcemod>
-#include <socket>
 #include <smac>
+#include <system2>
 
 /* Plugin Info */
 public Plugin myinfo =
@@ -37,17 +37,22 @@ public Plugin myinfo =
 /* Globals */
 #define ESEA_HOSTNAME   "play.esea.net"
 #define ESEA_QUERY      "index.php?s=support&d=ban_list&type=1&format=csv"
+#define ESEA_URL        "https://play.esea.net/index.php?s=support&d=ban_list&type=1&format=csv"
+char g_cDownloadPath[PLATFORM_MAX_PATH];
 
 ConVar g_hCvarKick;
+ConVar g_hCvarHttpDebug;
 Handle g_hBanlist = INVALID_HANDLE;
 
 /* Plugin Functions */
 public void OnPluginStart()
 {
     LoadTranslations("smac.phrases");
+    Create_Path();
 
     // Convars.
     g_hCvarKick = SMAC_CreateConVar("smac_esea_kick", "1", "Automatically kick players on the ESEA banlist.", 0, true, 0.0, true, 1.0);
+    g_hCvarHttpDebug = SMAC_CreateConVar("smac_esea_http_debug", "0", "Log debug information about http requests being made.", 0, true, 0.0, true, 1.0);
 
     // Initialize.
     g_hBanlist = CreateTrie();
@@ -92,15 +97,28 @@ public void OnClientAuthorized(int client, const char[] auth)
     }
 }
 
-void ESEA_DownloadBanlist()
+void Create_Path()
 {
-    // Begin downloading the banlist in memory.
-    Handle socket = SocketCreate(SOCKET_TCP, OnSocketError);
-    SocketSetOption(socket, ConcatenateCallbacks, 8192);
-    SocketConnect(socket, OnSocketConnected, OnSocketReceive, OnSocketDisconnected, ESEA_HOSTNAME, 80);
+    BuildPath(Path_SM, g_cDownloadPath, sizeof(g_cDownloadPath), "data/smac/esea_ban_list.csv");
+    CreateDirectory(g_cDownloadPath, 774);
 }
 
-void ESEA_ParseBan(char[] baninfo)
+void ESEA_DownloadBanlist()
+{
+    char gamefolder[32];
+    GetGameFolderName(gamefolder, sizeof(gamefolder));
+    
+    // Begin downloading the banlist in memory.
+    System2HTTPRequest httpRequest = new System2HTTPRequest(HttpResponseCallback, "https://play.esea.net/index.php?s=support&d=ban_list&type=1&format=csv");
+    httpRequest.SetOutputFile(g_cDownloadPath);
+    httpRequest.Timeout = 30;
+    httpRequest.SetVerifySSL(true);
+    httpRequest.SetUserAgent("SourceMod Anti-Cheat ( Game: %s | Version: %s )", gamefolder, SMAC_VERSION);
+    httpRequest.GET();
+    delete httpRequest; 
+}
+
+/* void ESEA_ParseBan(char[] baninfo)
 {
     if (baninfo[0] != '"')
     {
@@ -114,114 +132,20 @@ void ESEA_ParseBan(char[] baninfo)
     FormatEx(sAuthID, length, "STEAM_0:%s", baninfo[3]);
 
     SetTrieValue(g_hBanlist, sAuthID, 1);
-}
+} */
 
-public void OnSocketConnected(Handle socket, any arg)
+void HttpResponseCallback(bool success, const char[] error, System2HTTPRequest request, System2HTTPResponse response, HTTPRequestMethod method)
 {
-    char sRequest[256];
-
-    FormatEx(sRequest,
-        sizeof(sRequest),
-        "GET /%s HTTP/1.0\r\nHost: %s\r\nCookie: viewed_welcome_page=1\r\nConnection: close\r\n\r\n",
-        ESEA_QUERY,
-        ESEA_HOSTNAME);
-
-    SocketSend(socket, sRequest);
-}
-
-public void OnSocketReceive(Handle socket, char[] data, const int size, any arg)
-{
-    // Parse raw data as it's received.
-    static bool bParsedHeader, bSplitData;
-    char sBuffer[256];
-    int idx, length;
-
-    if (!bParsedHeader)
+    if(!success)
     {
-        // Parse and skip header data.
-        if ((idx = StrContains(data, "\r\n\r\n")) == -1)
-        {
-            return;
-        }
-        
-        idx += 4;
-
-        // Skip the first line as well (column names).
-        int offset = FindCharInString(data[idx], '\n');
-
-        if (offset == -1)
-        {
-            return;
-        }
-
-        idx += offset + 1;
-        bParsedHeader = true;
+        SMAC_Log("Failed to download ESEA ban list. Error: %s", error);
+        return;
     }
-
-    // Check if we had split data from the previous callback.
-    if (bSplitData)
+    
+    if(g_hCvarHttpDebug.BoolValue)
     {
-        length = FindCharInString(data[idx], '\n');
-
-        if (length == -1)
-        {
-            return;
-        }
-
-        length += 1;
-        int maxsize = strlen(sBuffer) + length;
-
-        if (maxsize <= sizeof(sBuffer))
-        {
-            Format(sBuffer, maxsize, "%s%s", sBuffer, data[idx]);
-            ESEA_ParseBan(sBuffer);
-        }
-
-        idx += length;
-        bSplitData = false;
+        SMAC_Log("DEBUG: Successfully downloaded ESEA ban list.");
+        SMAC_Log("DEBUG: Status Code: %d", response.StatusCode);
+        SMAC_Log("DEBUG: Downloaded %d bytes with %d bytes/seconds", response.DownloadSize, response.DownloadSpeed);    
     }
-
-    // Parse incoming data.
-    while (idx < size)
-    {
-        length = FindCharInString(data[idx], '\n');
-
-        if (length == -1)
-        {
-            FormatEx(sBuffer, sizeof(sBuffer), "%s", data[idx]);
-
-            bSplitData = true;
-            return;
-        }
-        else if (length < sizeof(sBuffer))
-        {
-            length += 1;
-
-            FormatEx(sBuffer, length, "%s", data[idx]);
-            ESEA_ParseBan(sBuffer);
-
-            idx += length;
-        }
-    }
-}
-
-public void OnSocketDisconnected(Handle socket, any arg)
-{
-    CloseHandle(socket);
-
-    // Check all players against the new list.
-    char sAuthID[MAX_AUTHID_LENGTH];
-
-    for (int i = 1; i <= MaxClients; i++)
-    {
-        if (IsClientAuthorized(i) && GetClientAuthId(i, AuthId_Steam2, sAuthID, sizeof(sAuthID), false))
-        {
-            OnClientAuthorized(i, sAuthID);
-        }
-    }
-}
-
-public void OnSocketError(Handle socket, const int errorType, const int errorNum, any arg)
-{
-    CloseHandle(socket);
 }
