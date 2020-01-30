@@ -38,8 +38,6 @@ public Plugin myinfo =
 };
 
 /* Globals */
-ConVar g_hCvarConnectSpam = null;
-ConVar g_hCvarValidateAuth = null;
 ConVar g_hCvarConnectSpam;
 ConVar g_hCvarValidateAuth;
 ConVar g_hCvarCheckNames;
