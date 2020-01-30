@@ -251,7 +251,6 @@ public Action Event_PlayerTeam(Event event, const char[] name, bool dontBroadcas
 
     // Don't broadcast team changes if they're being spammed.
     int client = GetClientOfUserId(event.GetInt("userid"));
-
     if (IS_CLIENT(client))
     {
         float fGameTime = GetGameTime();
@@ -326,7 +325,6 @@ bool IsClientNameValid(int client)
     GetClientName(client, sName, sizeof(sName));
     int iSize = strlen(sName);
     int iCheckMode = g_hCvarCheckNames.IntValue;
-
     switch(iCheckMode)
     {
         case 0: { return true; } // name check disabled
@@ -335,8 +333,6 @@ bool IsClientNameValid(int client)
             if(CheckCommandAccess(client, "smac_name_immunity", ADMFLAG_ROOT, true)) { return true; } // ignore clients with smac_name_immunity access
         }
     }
-
-
     if (iSize < 2 || sName[0] == '&' || IsCharSpace(sName[0]) || IsCharSpace(sName[iSize-1]))
     {
         return false;
