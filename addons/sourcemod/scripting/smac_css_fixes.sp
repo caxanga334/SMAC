@@ -213,7 +213,7 @@ public void OnRespawnFixChanged(ConVar convar, char[] oldValue, char[] newValue)
         UnhookEvent("round_start", Event_RoundStart, EventHookMode_PostNoCopy);
 
         RemoveCommandListener(Command_JoinClass, "joinclass");
-		
+        
         ClearSpawnData();
     }
     g_bRespawnFixEnabled = bNewValue;

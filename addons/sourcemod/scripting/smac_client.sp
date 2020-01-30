@@ -1,8 +1,8 @@
 /*
     SourceMod Anti-Cheat
-    Copyright (C) 2011-2016 SMAC Development Team 
+    Copyright (C) 2011-2016 SMAC Development Team
     Copyright (C) 2007-2011 CodingDirect LLC
-   
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -40,6 +40,9 @@ public Plugin myinfo =
 /* Globals */
 ConVar g_hCvarConnectSpam = null;
 ConVar g_hCvarValidateAuth = null;
+ConVar g_hCvarConnectSpam;
+ConVar g_hCvarValidateAuth;
+ConVar g_hCvarCheckNames;
 Handle g_hClientConnections = INVALID_HANDLE;
 float g_fTeamJoinTime[MAXPLAYERS+1][6];
 int g_iNameChanges[MAXPLAYERS+1];
@@ -61,6 +64,9 @@ public void OnPluginStart()
     // Convars.
     g_hCvarConnectSpam = SMAC_CreateConVar("smac_antispam_connect", "2", "Block reconnection attempts for X seconds. (0 = Disabled)", 0, true, 0.0);
     g_hCvarValidateAuth = SMAC_CreateConVar("smac_validate_auth", "0", "Kick clients that fail to authenticate within 10 seconds of joining the server.", 0, true, 0.0, true, 1.0);
+    g_hCvarCheckNames = SMAC_CreateConVar("smac_check_names_mode", "1",
+    "Check clients names and kick then if they have an invalid character in their name. 0 - Disabled, 1 - Enabled, 2 - Ignore players with smac_name_immunity override access"
+    , 0, true, 0.0, true, 2.0);
     g_hClientConnections = CreateTrie();
 
     // Hooks.
@@ -169,7 +175,7 @@ public void OnClientPutInServer(int client)
     }
 
     // Give the client 10s to fully authenticate.
-    if (!IsFakeClient(client) && !IsClientAuthorized(client) && GetConVarBool(g_hCvarValidateAuth))
+    if (!IsFakeClient(client) && !IsClientAuthorized(client) && g_hCvarValidateAuth.BoolValue)
     {
         CreateTimer(10.0, Timer_ValidateAuth, GetClientSerial(client), TIMER_FLAG_NO_MAPCHANGE);
     }
@@ -244,8 +250,8 @@ public Action Event_PlayerTeam(Event event, const char[] name, bool dontBroadcas
     }
 
     // Don't broadcast team changes if they're being spammed.
-    int client = GetClientOfUserId(GetEventInt(event, "userid"));
-    
+    int client = GetClientOfUserId(event.GetInt("userid"));
+
     if (IS_CLIENT(client))
     {
         float fGameTime = GetGameTime();
@@ -269,7 +275,7 @@ public Action Event_PlayerTeam(Event event, const char[] name, bool dontBroadcas
 
 public Action Event_PlayerChangeName(Event event, const char[] name, bool dontBroadcast)
 {
-    int client = GetClientOfUserId(GetEventInt(event, "userid"));
+    int client = GetClientOfUserId(event.GetInt("userid"));
 
     if (IS_CLIENT(client) && IsClientInGame(client) && !IsFakeClient(client) && ++g_iNameChanges[client] >= 5)
     {
@@ -285,7 +291,7 @@ public Action Event_PlayerChangeName(Event event, const char[] name, bool dontBr
 
 public Action Event_AchievementEarned(Event event, const char[] name, bool dontBroadcast)
 {
-    int client = GetEventInt(event, "player");
+    int client = GetClientOfUserId(event.GetInt("player"));
 
     if (IS_CLIENT(client) && ++g_iAchievements[client] >= 5)
     {
@@ -306,7 +312,7 @@ public Action Timer_DecreaseCount(Handle timer)
 
         if (g_iAchievements[i])
         {
-        	g_iAchievements[i]--;
+            g_iAchievements[i]--;
         }
     }
 
@@ -319,6 +325,17 @@ bool IsClientNameValid(int client)
 
     GetClientName(client, sName, sizeof(sName));
     int iSize = strlen(sName);
+    int iCheckMode = g_hCvarCheckNames.IntValue;
+
+    switch(iCheckMode)
+    {
+        case 0: { return true; } // name check disabled
+        case 2:
+        {
+            if(CheckCommandAccess(client, "smac_name_immunity", ADMFLAG_ROOT, true)) { return true; } // ignore clients with smac_name_immunity access
+        }
+    }
+
 
     if (iSize < 2 || sName[0] == '&' || IsCharSpace(sName[0]) || IsCharSpace(sName[iSize-1]))
     {
@@ -476,7 +493,7 @@ bool IsConnectSpamming(const char[] ip)
         hIgnoreList = CreateTrie();
     }
 
-    float fSpamTime = GetConVarFloat(g_hCvarConnectSpam);
+    float fSpamTime = g_hCvarConnectSpam.FloatValue;
 
     if (fSpamTime > 0.0)
     {

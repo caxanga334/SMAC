@@ -58,7 +58,7 @@ public void OnPluginStart()
     g_hCvarCmdSpam = SMAC_CreateConVar("smac_antispam_cmds", "20", "Amount of commands allowed per second. (0 = Disabled)", 0, true, 0.0);
     g_hCvarCmdSpmKick = SMAC_CreateConVar("smac_anticmdspam_kick", "1", "Choose to kick or simply notify that commands are being spammed. (0 = Notify  1 = Kick)", 0, true, 0.0, true, 1.0);
     OnSettingsChanged(g_hCvarCmdSpam, "", "");
-    HookConVarChange(g_hCvarCmdSpam, OnSettingsChanged);
+    g_hCvarCmdSpam.AddChangeHook(OnSettingsChanged);
 
     // Hooks.
     AddCommandListener(Command_Say, "say");
@@ -444,13 +444,13 @@ public Action Command_CommandListener(int client, const char[] command,int argc)
         
         if (SMAC_CheatDetected(client, Detection_CommandSpamming, info) == Plugin_Continue)
         {
-            if (GetConVarInt(g_hCvarCmdSpmKick) == 1)
+            if (g_hCvarCmdSpmKick.IntValue == 1)
             {
                 SMAC_PrintAdminNotice("%N was kicked for spamming: %s %s", client, command, sArgString);
                 SMAC_LogAction(client, "was kicked for spamming: %s %s", command, sArgString);
                 KickClient(client, "%t", "SMAC_CommandSpamKick");
             }
-            else if (GetConVarInt(g_hCvarCmdSpmKick) == 0)
+            else if (g_hCvarCmdSpmKick.IntValue == 0)
             {
                 SMAC_PrintAdminNotice("%N looks to be spamming commands: %s %s", client, command, sArgString);
                 SMAC_LogAction(client, "looks to be spamming commands: %s %s", command, sArgString);

@@ -35,9 +35,9 @@ public Plugin myinfo =
 };
 
 /* Globals */
-#define AIM_ANGLE_CHANGE	45.0	// Max angle change that a player should snap
-#define AIM_BAN_MIN			4		// Minimum number of detections before an auto-ban is allowed
-#define AIM_MIN_DISTANCE	200.0	// Minimum distance acceptable for a detection.
+#define AIM_ANGLE_CHANGE    45.0    // Max angle change that a player should snap
+#define AIM_BAN_MIN         4       // Minimum number of detections before an auto-ban is allowed
+#define AIM_MIN_DISTANCE    200.0   // Minimum distance acceptable for a detection.
 
 ConVar g_hCvarAimbotBan = null;
 Handle g_IgnoreWeapons = INVALID_HANDLE;

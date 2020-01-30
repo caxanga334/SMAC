@@ -35,8 +35,8 @@ public Plugin myinfo =
 };
 
 /* Globals */
-#define EAC_HOSTNAME	"easyanticheat.net"
-#define EAC_QUERY		"check_guid.php?id="
+#define EAC_HOSTNAME    "easyanticheat.net"
+#define EAC_QUERY       "check_guid.php?id="
 
 enum BanType {
     Ban_None = 0,
@@ -107,7 +107,7 @@ public void OnClientAuthorized(int client, const char[] auth)
 
         return;
     }
-	
+    
     // Clear a large cache to prevent slowdowns. Shouldn't reach this size anyway.
     if (GetTrieSize(g_hBanlist) > 50000)
     {

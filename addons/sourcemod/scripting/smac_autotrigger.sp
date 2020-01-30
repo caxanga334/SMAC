@@ -35,8 +35,8 @@ public Plugin myinfo =
 };
 
 /* Globals */
-#define TRIGGER_DETECTIONS  20		// Amount of detections needed to perform action.
-#define MIN_JUMP_TIME       0.500	// Minimum amount of air-time for a jump to count.
+#define TRIGGER_DETECTIONS  20      // Amount of detections needed to perform action.
+#define MIN_JUMP_TIME       0.500   // Minimum amount of air-time for a jump to count.
 
 // Detection methods.
 #define METHOD_BUNNYHOP     0
@@ -176,7 +176,7 @@ void AutoTrigger_Detected(int client,int method)
         {
             SMAC_PrintAdminNotice("%t", "SMAC_AutoTriggerDetected", client, sMethod);
 
-            if (GetConVarBool(g_hCvarBan))
+            if (g_hCvarBan.BoolValue)
             {
                 SMAC_LogAction(client, "was banned for using auto-trigger cheat: %s", sMethod);
                 SMAC_Ban(client, "AutoTrigger Detection: %s", sMethod);
