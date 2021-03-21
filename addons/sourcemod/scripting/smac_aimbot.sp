@@ -112,7 +112,9 @@ public void OnPluginStart()
             SetTrieValue(g_IgnoreWeapons, "tf_weapon_rocketpack", 1); 
             SetTrieValue(g_IgnoreWeapons, "tf_weapon_lunchbox_drink", 1);
             SetTrieValue(g_IgnoreWeapons, "tf_weapon_lunchbox", 1); 
-            SetTrieValue(g_IgnoreWeapons, "saxxy", 1); 
+            SetTrieValue(g_IgnoreWeapons, "saxxy", 1);
+			SetTrieValue(g_IgnoreWeapons, "tf_weapon_rocketlauncher_fireball", 1);
+			SetTrieValue(g_IgnoreWeapons, "tf_weapon_jar_gas", 1);
         }
         case Game_HL2DM:
         {
